@@ -1,0 +1,12 @@
+.students>p{
+    background-color:#F4F7FE ;
+    border-radius: 10px;
+    padding: 10px;
+}
+.list{
+    min-width: 100%;
+}
+.list>p{
+    min-width: 100%;
+    transition: all 5s ease;
+}
