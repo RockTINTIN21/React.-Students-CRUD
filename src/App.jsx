@@ -8,14 +8,6 @@ import Footer from "./layouts/Footer/Footer.jsx";
 function App() {
 
   return (
-      // <div className='wrapper p-3'>
-      //     <Header></Header>
-      //     <div className="content">
-      //       <Body></Body>
-      //       <RightPanel></RightPanel>
-      //     </div>
-      //     <Footer></Footer>
-      // </div>
       <>
           <Header></Header>
           <div className="content">
