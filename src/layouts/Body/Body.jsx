@@ -19,10 +19,10 @@ function Body() {
             <div className="bg-white">
                 <h3>Что хотите сделать сегодня?</h3>
                 <div>
-                    <ButtonModal text='Добавить студента' onClick={()=>saveFormType('addStudent')} />
-                    <ButtonModal text='Удалить студента' onClick={()=>saveFormType('delStudent')} />
-                    <ButtonModal text='Изменить студента' onClick={()=>saveFormType('updateStudent')} />
-                    <ButtonModal text='Вывести студентов по группе' onClick={()=>saveFormType('getStudentsByGroup')} />
+                    <ButtonModal text='Добавить студента' onClick={()=> saveFormType('addStudent')} />
+                    <ButtonModal text='Удалить студента' onClick={()=> saveFormType('delStudent')} />
+                    <ButtonModal text='Изменить студента' onClick={()=> saveFormType('updateStudent')} />
+                    <ButtonModal text='Вывести студентов по группе' onClick={()=> saveFormType('getStudentsByGroup')} />
 
                 </div>
             </div>
