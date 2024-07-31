@@ -1,13 +1,12 @@
 import styles from './ModalForm.module.css';
 import {Button, Form, Modal} from "react-bootstrap";
-import {useState} from "react";
-import {Context} from './context.js';
 import FormAddStudent from './Forms/FormAddStudent';
 import FormDelStudent from './Forms/FormDelStudent';
 import FormUpdateStudent from './Forms/FormUpdateStudent';
 import FormGetStudentsByGroup from './Forms/FormGetStudentsByGroup';
-import { validateFormData } from '../../ValidationForm.jsx';
+import {getApiData,validationSchema} from '../../ValidationForm.js';
 import {Formik} from "formik";
+import {useEffect, useState} from "react";
 function ModalForm({show, handleClose, action}) {
 
     const actionToModal = {
@@ -20,50 +19,64 @@ function ModalForm({show, handleClose, action}) {
     ModalContent = modalData ? modalData.component : 'Пусто',
     FormValues = modalData ? modalData.values : null,
     title = modalData?.title;
-    const [formData, setFormData] = useState(FormValues);
-    const [textError, setTextError] = useState('')
-    const [validated, setValidated] = useState(false);
-    const onChange  = (e)=>{
-        setFormData({...formData,[e.target.name]:e.target.value});
-    };
-    const onSubmit = (e)=>{
-        e.preventDefault();
 
-        const form = e.currentTarget;
-        console.log(formData)
-        if (form.checkValidity() === false) {
-            e.stopPropagation();
-        }
-        validateFormData(formData,setTextError);
-        console.log('Текст ошибки:', textError)
-        if(textError === null){
-            setValidated(true);
-        }else{
-            setValidated(false);
-            console.log('Опа')
-        }
-        setValidated(true);
-    };
+    const defaultValue = [];
+    const [serverErrors, setServerErrors] = useState();
+    const submitOnServer =  async (values,setErrors) => {
+        // try{
+            const response = await getApiData(values);
+            console.log('test',response.errors)
+            if (response.errors) {
+                const errors = {};
+                response.errors.forEach(error => {
+                    errors[error.field] = error.message;
+                });
+                setErrors(errors);
+                console.log('Существует')
+                throw new Error('Validation Error');
 
+            }else{
+                setServerErrors(null)
+            }
+
+        // }catch (error){
+        //     console.log('error:', error.errors.message)
+        // }
+
+    }
+    useEffect(() => {
+        console.log('Данные из запроса: ',serverErrors)
+    }, [serverErrors]);
     return (
-        <Context.Provider value={{textError,setTextError}}>
-            <Modal show={show} onHide={handleClose}>
-                <Modal.Header closeButton>
-                    <Modal.Title>{title || 'Заголовок окна'}</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <Formik initialValues={FormValues} onSubmit={()=>console.log('Успешно!')}>
-                        <ModalContent handleFormSubmit={onSubmit} handleChange={onChange} validated={validated}>
+        <Modal show={show} onHide={handleClose}>
+            <Modal.Header closeButton>
+                <Modal.Title>{title || 'Заголовок окна'}</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+                <Formik
+                    initialValues={FormValues}
+                    validationSchema={validationSchema(action)}
+                    onSubmit={
+                        (values,{setErrors}) => {
+                            submitOnServer(values,setErrors);
+
+                        }
+                    }
+                >
+                    {({handleSubmit, handleChange, values, touched, errors})=>(
+                        <Form onSubmit={handleSubmit}>
+                            <ModalContent handleChange={handleChange} values={values} touched={touched} errors={errors}>
+                            </ModalContent>
                             <Button variant="success" type="submit" className="container-fluid">
                                 {title || 'Кнопка'}
                             </Button>
-                        </ModalContent>
-                    </Formik>
+                        </Form>
+                    )}
+                </Formik>
 
 
-                </Modal.Body>
-            </Modal>
-        </Context.Provider>
+            </Modal.Body>
+        </Modal>
 
     );
 }
