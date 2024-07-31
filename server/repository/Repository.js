@@ -21,7 +21,7 @@ class Repository {
     }
 
     addStudent(name, lastName, age, group) {
-        const student = new Student(name, lastName, age, group),
+        const student = new Student(name, lastName, Number(age), group),
         res_group = this.reg_group.filter(elem => elem.toLowerCase() === group.toLowerCase()),
         res_nameLastNameAge = this.repository.filter(elem =>
             elem.name.toLowerCase() === name.toLowerCase() &&
@@ -29,6 +29,7 @@ class Repository {
             elem.age === Number(age)
         );
         console.log('Результат:',res_nameLastNameAge)
+        console.log(age)
         if(res_group.length === 0){
             const error = new Error("Такой группы не существует, сначала добавьте ее");
             error.name = "group";
@@ -40,7 +41,7 @@ class Repository {
         }else{
             this.repository.push(student);
         }
-
+        console.log(this.repository)
     }
 
     deleteStudent(id) {

@@ -21,31 +21,22 @@ function ModalForm({show, handleClose, action}) {
     title = modalData?.title;
 
     const defaultValue = [];
-    const [serverErrors, setServerErrors] = useState();
-    const submitOnServer =  async (values,setErrors) => {
-        // try{
-            const response = await getApiData(values);
-            console.log('test',response.errors)
-            if (response.errors) {
-                const errors = {};
-                response.errors.forEach(error => {
-                    errors[error.field] = error.message;
-                });
-                setErrors(errors);
-                console.log('Существует')
-                throw new Error('Validation Error');
-
-            }else{
-                setServerErrors(null)
-            }
-
-        // }catch (error){
-        //     console.log('error:', error.errors.message)
-        // }
+    const [serverErrors, setServerErrors] = useState({});
+    const submitOnServer =  async (values) => {
+        const response = await getApiData(values);
+        if(response.status === 'error'){
+            const nameField = response.errors.field
+            console.log('error')
+            console.log({[nameField]:response.errors.message })
+            setServerErrors({[nameField]:response.errors.message })
+        }else{
+            console.log('test')
+            setServerErrors(response)
+        }
 
     }
     useEffect(() => {
-        console.log('Данные из запроса: ',serverErrors)
+        console.log('Ошибка: ',serverErrors)
     }, [serverErrors]);
     return (
         <Modal show={show} onHide={handleClose}>
@@ -57,15 +48,15 @@ function ModalForm({show, handleClose, action}) {
                     initialValues={FormValues}
                     validationSchema={validationSchema(action)}
                     onSubmit={
-                        (values,{setErrors}) => {
-                            submitOnServer(values,setErrors);
+                        (values) => {
+                            submitOnServer(values);
 
                         }
                     }
                 >
                     {({handleSubmit, handleChange, values, touched, errors})=>(
                         <Form onSubmit={handleSubmit}>
-                            <ModalContent handleChange={handleChange} values={values} touched={touched} errors={errors}>
+                            <ModalContent handleChange={handleChange} values={values} touched={touched} errors={errors} serverErrors={serverErrors}>
                             </ModalContent>
                             <Button variant="success" type="submit" className="container-fluid">
                                 {title || 'Кнопка'}

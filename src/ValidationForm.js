@@ -1,15 +1,16 @@
 import * as yup from "yup";
 
 const regx = {
-    name: /^[а-яА-Я]{2,20}$/ ,
+    name: /^[а-яА-Я]{2,20}$/,
     age: /^(1[0-1][0-9]|120|[2-9][0-9])$/,
-    group: /^[А-Яа-я]{3}-\d{3}$/,
+    group: /^[А-Яа-я]{4}-\d{3}$/,
     id: /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
 }
 export const validationSchema = (action)=>{
     switch (action){
         case 'addStudent':
             return yup.object().shape({
+                // name: yup.string().required('Обязательно').matches(regx.name, 'Кириллица, латиница от 2 до 20 символов'),
                 name: yup.string().required('Обязательно').matches(regx.name, 'Кириллица, латиница от 2 до 20 символов'),
                 lastName: yup.string().required('Обязательно').matches(regx.name, 'Кириллица, латиница от 2 до 20 символов'),
                 age: yup.number().required('Обязательно').min(10, 'Минимум 10').max(120, 'Максимум 120').typeError('Возраст должен быть числом'),
@@ -38,13 +39,10 @@ export const getApiData = async (values)=>{
     };
     return await fetch("http://localhost:3000/addStudent", requestOptions)
         .then((response) => {
-            if(response.status === 400){
-                return response.json()
-                    .then((data)=>{
-                        throw data;
-                    })
-            }
             return response.json()
+                .then((data) => {
+                    return (data);
+                })
         })
         // .catch (error => {
         //     throw error;
