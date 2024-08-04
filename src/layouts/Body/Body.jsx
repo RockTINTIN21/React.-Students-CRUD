@@ -6,6 +6,7 @@ import ModalForm from "../../components/Modal/ModalForm.jsx";
 function Body() {
     const [showModal, setShowModal] = useState(false);
     const [formType, setFormType] = useState(null);
+    const [submittedData, setSubmittedData] = useState(null)
     const saveFormType = (formType) => {
         setFormType(formType);
         setShowModal(true);
@@ -13,6 +14,9 @@ function Body() {
     const closeModal = () => {
         setShowModal(false);
     };
+    const handleDataSubmission = ()=>{
+        setShowModal(false);
+    }
 
     return (
         <main className="main-content mt-3">
@@ -22,11 +26,10 @@ function Body() {
                     <ButtonModal text='Добавить студента' onClick={()=> saveFormType('addStudent')} />
                     <ButtonModal text='Удалить студента' onClick={()=> saveFormType('delStudent')} />
                     <ButtonModal text='Изменить студента' onClick={()=> saveFormType('updateStudent')} />
-                    <ButtonModal text='Вывести студентов по группе' onClick={()=> saveFormType('getStudentsByGroup')} />
 
                 </div>
             </div>
-            <ModalForm show={showModal} handleClose={closeModal} action={formType} />
+            <ModalForm show={showModal} handleClose={closeModal} action={formType} onSubmit={handleDataSubmission}/>
         </main>
 
     );

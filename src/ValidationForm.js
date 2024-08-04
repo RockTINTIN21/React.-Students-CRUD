@@ -1,53 +1,92 @@
 import * as yup from "yup";
 
 const regx = {
-    name: /^[а-яА-Я]{2,20}$/,
-    age: /^(1[0-1][0-9]|120|[2-9][0-9])$/,
-    group: /^[А-Яа-я]{4}-\d{3}$/,
-    id: /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
+    name: {regx: /^[а-яА-Я]{2,20}$/, errorText:'Кириллица, латиница от 2 до 20 символов'},
+    group: {regx: /^[А-Яа-я]{4}-\d{3}$/,errorText: 'Формат: "ИСИП-208"'},
+    id: {regx: /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/, errorText:'Формат: "f10e4578-467f-4d57-af65-969c52e0996b"'}
 }
 export const validationSchema = (action)=>{
+    const { name, group, id } = regx;
     switch (action){
         case 'addStudent':
             return yup.object().shape({
-                // name: yup.string().required('Обязательно').matches(regx.name, 'Кириллица, латиница от 2 до 20 символов'),
-                name: yup.string().required('Обязательно').matches(regx.name, 'Кириллица, латиница от 2 до 20 символов'),
-                lastName: yup.string().required('Обязательно').matches(regx.name, 'Кириллица, латиница от 2 до 20 символов'),
-                age: yup.number().required('Обязательно').min(10, 'Минимум 10').max(120, 'Максимум 120').typeError('Возраст должен быть числом'),
-                group: yup.string()
-                    .required('Обязательно')
-                    .matches(regx.group, 'Формат группы: ИСИП-208')
+                name: yup.string().required('Обязательно').matches(name.regx,name.errorText),
+                lastName: yup.string().required('Обязательно').matches(name.regx,name.errorText),
+                age: yup.number().required('Обязательно').min(15, 'Минимум 15').max(120, 'Максимум 120').typeError('Возраст должен быть числом'),
+                group: yup.string().required('Обязательно').matches(group.regx, group.errorText)
             });
         case 'delStudent':
             return yup.object().shape({
-                id: yup.string().required('Обязательно').matches(regx.name, 'Формат: 550e8400-e29b-41d4-a716-446655440000')
+                id: yup.string().required('Обязательно').matches(id.regx,id.errorText)
+            });
+        case 'updateStudent':
+            return yup.object().shape({
+                id: yup.string().required('Обязательно').matches(id.regx,id.errorText),
+                name: yup.string().required('Обязательно').matches(name.regx,name.errorText),
+                lastName: yup.string().required('Обязательно').matches(name.regx,name.errorText),
+                age: yup.number().required('Обязательно').min(15, 'Минимум 15').max(120, 'Максимум 120').typeError('Возраст должен быть числом'),
+                group: yup.string().required('Обязательно').matches(group.regx, group.errorText)
             });
     }
 }
-// export const getApiData = async ()=>{
-//     return await fetch(
-//         "http://localhost:3000/getStudentsByGroup?group=ПСО204"
-//     ).then((response) => response.json());
-// }
+export const validationSchemaRightPanel = (action)=>{
+    const { name, group, id } = regx;
+    switch (action){
+        case 'getStudentByGroup':
+            return yup.object().shape({
+                group: yup.string().required('Обязательно').matches(group.regx, group.errorText)
+            })
+    }
+}
 
-export const getApiData = async (values)=>{
-    console.log('Данные:',values,'получены')
+export const getApiData = async (values,action,method)=>{
     const requestOptions = {
-        method: 'POST',
+        method: method,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(values)
     };
-    return await fetch("http://localhost:3000/addStudent", requestOptions)
-        .then((response) => {
-            return response.json()
-                .then((data) => {
-                    return (data);
+    switch (action){
+        case 'addStudent':
+            return await fetch("http://localhost:3000/addStudent",requestOptions)
+                .then((response) => {
+                    return response.json()
+                        .then((data) => {
+                            return (data);
+                        })
                 })
-        })
-        // .catch (error => {
-        //     throw error;
-        // })
-
-
+        case 'delStudent':
+            return await fetch("http://localhost:3000/delStudent",requestOptions)
+                .then((response) => {
+                    return response.json()
+                        .then((data) => {
+                            return (data);
+                        })
+                })
+        case 'updateStudent':
+            return await fetch("http://localhost:3000/updateStudent",requestOptions)
+                .then((response) => {
+                    return response.json()
+                        .then((data) => {
+                            return (data);
+                        })
+                })
+    }
 }
+export const getApiDataSearch = async (values,action)=>{
+    const requestOptions = {
+        method: 'GET'
+    };
+    const queryParams = new URLSearchParams(values).toString();
+    switch (action){
+        case 'getStudentByGroup':
+            return await fetch(`http://localhost:3000/getStudentsByGroup?${queryParams}`,requestOptions)
+                .then((response) => {
+                    return response.json()
+                        .then((data) => {
+                            return (data);
+                        })
+                })
+    }
+}
+
 

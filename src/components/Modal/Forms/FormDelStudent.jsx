@@ -1,9 +1,9 @@
-import {Form} from "react-bootstrap";
-function FormDelStudent() {
+import FormForModal from "../Form/FormForModal.jsx";
+function FormDelStudent({handleChange,values, touched, errors, serverErrors}) {
 
     return (
         <>
-            Удалить
+            <FormForModal formId={"formDelStudent"} id="id" inputName="id" nameLabel="ID" handleChange={handleChange} value={values.id} touched={touched.id} errors={errors.id} serverErrors={serverErrors.id}/>
         </>
     );
 }

@@ -4,10 +4,10 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import studentController from './controllers/studentController.js';
 
+
 const app = express();
 const port = 3000;
 
-// Определение пути __dirname в ESM
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
